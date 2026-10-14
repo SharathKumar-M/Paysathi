@@ -1,0 +1,84 @@
+@baseUrl = http://127.0.0.1:8000
+
+### Health
+GET {{baseUrl}}/health
+
+### Metadata
+GET {{baseUrl}}/api/v1/meta
+
+### Parse a UPI QR payload (no payment is made)
+POST {{baseUrl}}/api/v1/pay-guard/parse-qr
+Content-Type: application/json
+
+{
+  "qr_payload": "upi://pay?pa=corner.shop%40upi&pn=Corner%20Shop&am=125.50&cu=INR&tn=Groceries"
+}
+
+### Pay Guard: suspicious pension verification call (expect RED)
+POST {{baseUrl}}/api/v1/pay-guard/analyze
+Content-Type: application/json
+
+{
+  "language": "en",
+  "payee_name": "Ravi Kumar",
+  "payee_id": "ravi@upi",
+  "amount": 2500,
+  "purpose_text": "A caller said my pension will be stopped unless I pay a verification fee immediately. They told me not to tell my family.",
+  "request_type": "pay",
+  "is_new_payee": true,
+  "recipient_type": "person",
+  "on_phone_call": true
+}
+
+### Message Explainer
+POST {{baseUrl}}/api/v1/messages/explain
+Content-Type: application/json
+
+{
+  "language": "en",
+  "text": "Bank officer: share your OTP immediately or your account will be blocked."
+}
+
+### Saathi screen-aware guidance
+POST {{baseUrl}}/api/v1/saathi
+Content-Type: application/json
+
+{
+  "language": "kn",
+  "current_screen": "pay-guard",
+  "message": "ಪಾವತಿ ಮಾಡುವ ಮೊದಲು ಏನು ಪರಿಶೀಲಿಸಬೇಕು?",
+  "simplify": false,
+  "screen_data": {}
+}
+
+### Scam Gym scenarios
+GET {{baseUrl}}/api/v1/scam-gym/scenarios
+
+### Scam Gym attempt (replace session_id with a random per-user session)
+POST {{baseUrl}}/api/v1/scam-gym/attempt
+Content-Type: application/json
+
+{
+  "session_id": "demo-session-2f4a81",
+  "scenario_id": "collect-request",
+  "choice_id": "decline",
+  "stage": "before",
+  "elapsed_seconds": 15,
+  "language": "en"
+}
+
+### Scam Gym summary
+GET {{baseUrl}}/api/v1/scam-gym/summary/demo-session-2f4a81
+
+### After Kit
+POST {{baseUrl}}/api/v1/after-kit/guidance
+Content-Type: application/json
+
+{
+  "language": "en",
+  "incident_status": "paid",
+  "has_screenshot": true,
+  "has_caller_number": true,
+  "has_transaction_details": true,
+  "amount": 2500
+}
